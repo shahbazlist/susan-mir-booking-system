@@ -17,11 +17,7 @@ class ServiceSlotController extends Controller
      */
     public function index()
     {
-        $data = ServiceSlot::with('service')->latest()->get();
-        
-        // $data= ServiceSlot::latest()->paginate(10);
-        // $data= Service::latest()->get();
-        
+        $data= ServiceSlot::latest()->paginate(10);
         return view('theme.service_slot.index',compact('data'));
     }
 

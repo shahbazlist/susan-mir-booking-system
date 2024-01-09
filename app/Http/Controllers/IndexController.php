@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ServiceSlot;
 use App\Models\BookingService;
+use App\Models\Service;
+use Validator;
 
 class IndexController extends Controller
 {
@@ -58,13 +60,25 @@ class IndexController extends Controller
     
     public function booking(Request $request)
     {
+        
+        $validator = Validator::make($request->all(), [
+            'full_name' => 'required',
+            'email'     => 'required',
+            'slot_qty'  => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['status'=> false,'msg'=> $validator->getMessageBag()]);
+        }
+        $getServiceId = ServiceSlot::where('id', $request->selectedBookingId)->first()->service_id;
+        $calculate = $request->slot_qty*Service::where('id', $getServiceId)->first()->price;
+
         $booking = new BookingService();
         $booking->booking_id    = time();
         $booking->service_id    = $request->selectedBookingId;
         $booking->full_name     = $request->full_name;
         $booking->email         = $request->email;
         $booking->booking_qty   = $request->slot_qty;
-        $booking->total_cost    = $request->actual_cost;
+        $booking->total_cost    = $calculate;
         $booking->booking_service_date  = date("Y-m-d", strtotime($request->selectedBookingDate));
         $booking->booking_date   = date('Y-m-d H:i:s');
         $booking->save();

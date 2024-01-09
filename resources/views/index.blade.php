@@ -37,12 +37,14 @@
                 <div class="form-group">
                   <label for="full_name">Full Name</label>
                   <input type="text" name="full_name" id="full_name" class="form-control" placeholder="Enter your full name">
+                  <span id="full_nameError" class="msgError"></span>
                 </div>
               </div>
               <div class="col-sm-12">  
                 <div class="form-group">
                   <label for="email">Email</label>
                   <input type="text" name="email" id="email" class="form-control" placeholder="Enter your email">
+                  <span id="emailError" class="msgError"></span>
                 </div>
               </div>
             </div>
@@ -51,6 +53,7 @@
                 <div class="form-group">
                   <label for="slot_qty">Slot Qty</label>
                   <input type="text" name="slot_qty" id="slot_qty" class="form-control slotPriceCal" placeholder="Ex 5">
+                  <span id="slot_qtyError" class="msgError"></span>
                 </div>
               </div>
               <div class="col-sm-6">  
@@ -60,6 +63,7 @@
                 </div>
               </div>
             </div>
+            <span id="actual_costError" class="msgError"></span>
           </div>
         </form>
 			</div>
@@ -212,33 +216,59 @@
 
         $("#bookingSlotBtn").click(function (event) {
                 event.preventDefault();
-                var form = $('#bookingSlotForm')[0];
-                // Create an FormData object 
-                var data = new FormData(form);
-                // If you want to add an extra field for the FormData
-                // data.append("CustomField", "This is some extra data, testing");
-                // disabled the submit button
-                $("#bookingSlotBtn").prop("disabled", true);
-                $.ajax({
-                    type: "POST",
-                    enctype: 'multipart/form-data',
-                    url: "{{route('home.booking.booking')}}",
-                    data: data,
-                    processData: false,
-                    contentType: false,
-                    cache: false,
-                    timeout: 800000,
-                    success: function (response) {
-                      if(response.status == 'true'){
-                        alert(response.msg);
-                        location.reload();
-                      }
+                
+                $(".msgError").html("");
+                var validationCount = 1;
+                if($("#full_name").val().trim() == ""){
+                    $("#full_nameError").html("<span class='text-danger'>Please enter full name.</span>");
+                    var validationCount= 0;     
+                }
+                // if($("#email").val().trim() == ""){
+                //     $("#emailError").html("<span class='text-danger'>Please enter email.</span>");
+                //     var validationCount= 0;     
+                // }
+                if($("#slot_qty").val().trim() == ""){
+                    $("#slot_qtyError").html("<span class='text-danger'>Please enter slot qty.</span>");
+                    var validationCount= 0;     
+                }
+                if($("#actual_cost").val().trim() == ""){
+                    $("#actual_costError").html("<span class='text-danger'>Something went wrong!</span>");
+                    var validationCount= 0;     
+                }
+                
+                if(validationCount == 1){
+                    var form = $('#bookingSlotForm')[0];
+                    var data = new FormData(form);
+                    $("#bookingSlotBtn").prop("disabled", true);
+                    $.ajax({
+                        type: "POST",
+                        enctype: 'multipart/form-data',
+                        url: "{{route('home.booking.booking')}}",
+                        data: data,
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                        timeout: 800000,
+                        success: function (response) {
+                          if(response.status == false){
+                            $(".bookingSlotBtn").removeAttr("disabled");
+                              $.each( response.msg, function( key, value ) {
+                                  $('#'+key+'Error').html('<span class="text-danger">'+value+'</span>');
+                              });
+                          }
 
-                    },
-                    error: function (e) {
-                      alert('something went wrong');
-                    }
-                });
+                          if(response.status == 'true'){
+                            alert(response.msg);
+                            location.reload();
+                          }
+
+                        },
+                        error: function (e) {
+                          $(".bookingSlotBtn").removeAttr("disabled");
+                          alert('something went wrong');
+                        }
+                      });
+                  }
 
                 });
     </script>

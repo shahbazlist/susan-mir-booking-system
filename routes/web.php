@@ -45,6 +45,8 @@ Route::middleware(['auth', 'twofactor'])->prefix('admin')->group(function () {
     // For Service
     Route::get('/service', 'Admin\ServiceController@index')->name('admin.service.index');
     Route::post('/service/store', "Admin\ServiceController@store")->name('admin.service.store');
+    Route::get('/service/edit', "Admin\ServiceController@edit")->name('admin.service.edit');
+    Route::post('/service/update', "Admin\ServiceController@update")->name('admin.service.update');
 
     // For Service Slot
     Route::get('/service-slot', 'Admin\ServiceSlotController@index')->name('admin.service_slot.index');

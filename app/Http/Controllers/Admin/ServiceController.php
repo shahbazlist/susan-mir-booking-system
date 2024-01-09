@@ -18,7 +18,7 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $data= DB::table('services')->get();
+        $data= Service::latest()->paginate(10);
         return view('theme.service.index',compact('data'));
     }
 
@@ -71,25 +71,13 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-        // if($request->isMethod('post')) {
-        //     DB::table('reason_cancel')->where('id', $request->id)
-        //         ->limit(1)
-        //         ->update(array('reason'=>$request->edit_cancelreason));
-          
-        //        return response()->json(['status' => 200, 'message'=>'Cancel Reason updated successfully.']);
-        // }
-        
-        // $data = $request->all();
-        
-        // $getData = DB::table('reason_cancel')
-        //                     ->select('id','reason')
-        //                     ->where('id', $data['id'])
-        //                     ->first();
-        // $viewRender = "";
-        // $viewRender = view('admin.master.editcancelreason',compact('getData'))->render();
-        // return response()->json(['success' => true, 'html' => $viewRender]);
+        $data = $request->all();
+        $getData = Service::where('id',$data['id'])->first();
+        $viewRender = "";
+        $viewRender = view('theme.service.edit',compact('getData'))->render();
+        return response()->json(['success' => true, 'html' => $viewRender]);
     }
 
     /**
@@ -99,9 +87,21 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'service_name' => 'required',
+            'service_price' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['status'=> false,'msg'=> $validator->getMessageBag()]);
+        }
+
+        $service = Service::find($request->id);
+        $service->service_name  = $request->service_name;
+        $service->price         = $request->service_price;
+        $service->save();
+        return response()->json(['status' => 200, 'message'=>'Service updated successfully.']);
     }
 
     /**
@@ -118,13 +118,6 @@ class ServiceController extends Controller
     public function services()
     {
         $data= DB::table('services_data')->get();
-        // $data= Service::latest()->get();
-        
         return view('theme.service.service_name',compact('data'));
-    }
-
-    public function services_store(Request $request)
-    {
-        dd($request->all());
     }
 }

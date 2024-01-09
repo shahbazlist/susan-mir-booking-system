@@ -36,9 +36,6 @@ $page_number = 1;
     
         </div>
         <div class="card-body p-0">
-          
-          {{-- <div class="load_data"></div> --}}
-          {{-- ---------- --}}
           @if(isset($data) && count($data)>0)
           
           <table class="table table-hover">
@@ -66,19 +63,21 @@ $page_number = 1;
                 <td>{{ $v->full_name }}</td>
                 <td>{{ $v->email }}</td>
               </tr>
-              <?php //$page_number++ ?>
 
               @endforeach
             <tbody>
           </table>
-          <div class="text-muted p-2">Total Count : {{ $data->count() }}</div>
+          @if(count($data) !== 0)
+            <hr>
+            @endif
+            <div class="page-area">
+                {!! $data->links('pagination::bootstrap-4') !!}
+            </div>
           @else
           <div class="alert alert-warning" align="center">
             Opps, seems like records not available.
           </div>
           @endif
-          
-          {{-- ---------- --}}
         </div>
       </div>
     </div>
@@ -87,40 +86,7 @@ $page_number = 1;
 @push("scripts")
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script type="text/javascript">
-  function load_data() {
-    // $(".load_data").html('');
-    // $(".ajax_loader").show();
-  }
-//   $(document).ready(function() {
-//     $(".bulk_select_btn").hide();
-//     load_data();
-//     $(".change_row_limit").change(function() {
-//       load_data();
-//     });
-//     $(".search_data").click(function(e) {
-//       e.preventDefault();
-//       load_data();
-//     });
-//     $(".reset_data").click(function(e) {
-//       e.preventDefault();
-//       $(".search").val('');
-//       load_data();
-//     });
-//     $(".all_trashed").click(function(e) {
-//       $(".bulk_select_btn").hide();
-//       e.preventDefault();
-//       temp = $(this).attr('data-val');
-//       $(".all_trashed").removeClass('active');
-//       $(this).addClass('active');
-//       $(".all_trashed_input").val(temp);
-//       if (temp == "all") {
-//         $(".action_selected").val('trash');
-//       } else {
-//         $(".action_selected").val('restore');
-//       }
-//       load_data();
-//     });
-//   });
+    
 </script>
 @endpush
 @endsection

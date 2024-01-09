@@ -105,28 +105,28 @@ $menu = array (
   //     ),
   //   ),
   // ),
-  5 => 
-  array (
-    'name' => 'Settings',
-    'icon' => 'fa fa-gear',
-    'dropdown' => true,
-    'route' => '',
-    'dropdown_items' => 
-    array (
-      0 => 
-      array (
-        'name' => 'General Settings',
-        'icon' => 'fa fa-circle-o',
-        'route' => 'admin.settings.index',
-      ),
-      1 => 
-      array (
-        'name' => 'Edit Profile',
-        'icon' => 'fa fa-circle-o',
-        'route' => 'admin.settings.edit_profile',
-      ),
-    ),
-  ),
+  // 5 => 
+  // array (
+  //   'name' => 'Settings',
+  //   'icon' => 'fa fa-gear',
+  //   'dropdown' => true,
+  //   'route' => '',
+  //   'dropdown_items' => 
+  //   array (
+  //     0 => 
+  //     array (
+  //       'name' => 'General Settings',
+  //       'icon' => 'fa fa-circle-o',
+  //       'route' => 'admin.settings.index',
+  //     ),
+  //     1 => 
+  //     array (
+  //       'name' => 'Edit Profile',
+  //       'icon' => 'fa fa-circle-o',
+  //       'route' => 'admin.settings.edit_profile',
+  //     ),
+  //   ),
+  // ),
 );
 
 

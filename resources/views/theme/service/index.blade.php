@@ -1,8 +1,6 @@
 @extends('theme.layouts.app')
 @section('content')
-<?php
-$page_number = 1;
-?>
+
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-md-12">
@@ -24,14 +22,11 @@ $page_number = 1;
     
           <div class="float-right">
             <div class="input-group mb-3">
-              <a class="btn btn-primary ml-2" href="#" data-bs-toggle="modal" data-bs-target="#addService">Add New</a>
+              <a class="btn btn-primary ml-2" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addService">Add New</a>
             </div>
           </div>
         </div>
         <div class="card-body p-0">
-          
-          {{-- <div class="load_data"></div> --}}
-          {{-- ---------- --}}
           @if(isset($data) && count($data)>0)
           
           <table class="table table-hover">
@@ -41,7 +36,7 @@ $page_number = 1;
                 <th>Service Name</th>
                 <th>Service Price</th>
                 <th>Date Created</th>
-                <th></th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -52,25 +47,27 @@ $page_number = 1;
                 <td>{{ $v->price }}</td>
                 <td>{{ Date('d M, Y',strtotime($v->created_at)) }}</td>
                 <td>
-                  <a href="" class="btn btn-primary btn-sm">Edit</a>
-                  <a href="#" data-id="{{ $v->id }}" class="btn btn-danger btn-sm trash_btn delete{{ $v->id }}">Trash</a>
+                  <a href="javascript:void(0);" onclick="editData({{$v->id}})" class="btn btn-primary btn-sm">Edit</a>
+                  {{-- <a href="javascript:void(0);" data-id="{{ $v->id }}" class="btn btn-danger btn-sm trash_btn delete{{ $v->id }}">Trash</a> --}}
                   
                 </td>
               </tr>
-              <?php //$page_number++ ?>
 
               @endforeach
             <tbody>
           </table>
-          <div class="text-muted p-2">Total Count : {{ $data->count() }}</div>
+          @if(count($data) !== 0)
+              <hr>
+              @endif
+              <div class="page-area">
+                  {!! $data->links('pagination::bootstrap-4') !!}
+              </div>
           
           @else
           <div class="alert alert-warning" align="center">
             Opps, seems like records not available.
           </div>
           @endif
-          
-          {{-- ---------- --}}
         </div>
         
       </div>
@@ -119,20 +116,19 @@ $page_number = 1;
  </div>
 
  {{-- Edit Form --}}
- <div class="modal fade" id="addService" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal fade" id="editService" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" style="max-width: 40%;" role="document">
      <div class="modal-content">
         <div class="modal-header">
-           <h5 class="modal-title" id="exampleModalLabel">Add Service</h5>
+           <h5 class="modal-title" id="exampleModalLabel">Edit Service</h5>
            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
            <span aria-hidden="true">&times;</span>
            </button>
         </div>
-        <div id="editForm"></div>
+        <div id="editContent"></div>
      </div>
   </div>
 </div>
- <!-- End Basic Modal-->
 
 @push("scripts")
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -195,6 +191,70 @@ $page_number = 1;
                 });
             }
    		});
+       
+       $(document).on("click",".editServiceBtn",function() {
+            $(".msgError").html("");
+            var validationCount = 1;
+              if($("#service_name_edit").val().trim() == ""){
+                  $("#service_name_editError").html("<span class='text-danger'>Please enter service name.</span>");
+                  var validationCount= 0;     
+              }
+            if($("#service_price_edit").val().trim() == ""){
+                    $("#service_price_editError").html("<span class='text-danger'>Please add the service price.</span>");
+                    var validationCount= 0;     
+                }
+            if(validationCount == 1){
+                event.preventDefault();
+                var formData = new FormData($('#editServiceForm')[0]);
+                $.ajax({
+                    url: "{{route('admin.service.update')}}",
+                    type: 'POST',
+                        data: formData,
+                        mimeType: "multipart/form-data",
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+                    beforeSend: function () {
+                        $('.saveBtnLoader').html(' <button type="button" class="btn btn-info btn-round" disabled>Save Changes</button>');
+                        },
+                    success:function(response) {
+                        response = JSON.parse(response);
+                        $('.saveBtnLoader').html(' <button type="button" class="btn btn-info btn-round editServiceBtn">Save Changes</button>');
+                        if(response.status == false){
+                            $.each( response.msg, function( key, value ) {
+                                $('#'+key+'Error').html('<span class="text-danger">'+value+'</span>');
+                            });
+                        }
+                        if (response.status == 200) {
+                            $(".message").html('<div class="alert alert-success">'+response.message+'</div>');
+                            $('#editService').modal('hide');
+                            $("#editServiceForm")[0].reset();
+                            setTimeout(function(){
+                              location.reload();
+                              }, 5000);
+                            
+                        }
+                    },
+                });
+            }
+   		});
+
+      // Edit
+   		function editData(id){
+        if(id !="") {
+            $.ajax({
+                url: "{{route('admin.service.edit')}}",
+                type: "GET",
+                data: {'id':id},
+                success: function (response) {
+                    if(response.success==true) {
+                        $('#editService').modal('show');
+                        $('#editContent').html(response.html);
+                    } 
+                }
+            });
+        }
+      }
 </script>
 @endpush
 @endsection

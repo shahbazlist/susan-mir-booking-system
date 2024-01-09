@@ -16,10 +16,9 @@ class BookingServiceController extends Controller
      */
     public function index()
     {
-        $data= BookingService::latest()->get();
+        $data= BookingService::latest()->paginate(10);
         foreach($data as $val){
             $val['service_name'] =  DB::table('services')->where('id',$val['service_id'])->first()->service_name;
-            // $val['service_name'] = ->service_name;
         }
     
         return view('theme.booking.index',compact('data'));
