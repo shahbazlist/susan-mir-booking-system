@@ -21,6 +21,8 @@ Route::post('/booking', 'IndexController@booking_ability')->name('home.booking.b
 Route::post('/booking/price', 'IndexController@booking_price_cal')->name('home.booking.price_cal');
 Route::post('/booking/book', 'IndexController@booking')->name('home.booking.booking');
 
+Route::post('/booking/chosebook', 'IndexController@chosebook')->name('home.booking.chosebook');
+
 Auth::routes([
   'register' => false, // Registration Routes...
   'reset' => false, // Password Reset Routes...
@@ -40,25 +42,20 @@ Route::middleware(['auth', 'twofactor'])->prefix('admin')->group(function () {
   // For Dashboard
   Route::get('/dashboard', 'HomeController@index')->name('admin.dashboard');
 
-    Route::get('/services', 'Admin\ServiceController@services')->name('admin.services.index');
-    Route::post('/services', 'Admin\ServiceController@services_store')->name('admin.services.store');
-    // For Service
-    Route::get('/service', 'Admin\ServiceController@index')->name('admin.service.index');
-    Route::post('/service/store', "Admin\ServiceController@store")->name('admin.service.store');
-    Route::get('/service/edit', "Admin\ServiceController@edit")->name('admin.service.edit');
-    Route::post('/service/update', "Admin\ServiceController@update")->name('admin.service.update');
 
-    // For Service Slot
-    Route::get('/service-slot', 'Admin\ServiceSlotController@index')->name('admin.service_slot.index');
-    Route::get('/service-slot/add', "Admin\ServiceSlotController@create")->name('admin.service_slot.create');
-    Route::post('/service-slot/store', "Admin\ServiceSlotController@store")->name('admin.service_slot.store');
-    Route::get('/service-slot/edit/{id}', "Admin\ServiceSlotController@edit")->name('admin.service_slot.edit');
-    Route::post('/service-slot/update/{id}', "Admin\ServiceSlotController@update")->name('admin.service_slot.update');
-    // For Service
-    Route::get('/bookings', 'Admin\BookingServiceController@index')->name('admin.booking.index');
+    // For Services and Avality Slot
+    Route::get('/services', 'Admin\ServicesController@index')->name('admin.services.index');
+    Route::get('/services/add', 'Admin\ServicesController@create')->name('admin.services.create');
+    Route::post('/services/store', 'Admin\ServicesController@store')->name('admin.services.store');
+    Route::get('/services/edit/{id}', "Admin\ServicesController@edit")->name('admin.services.edit');
+    Route::post('/services/update/{id}', "Admin\ServicesController@update")->name('admin.services.update');
+    Route::get('/services/availability', 'Admin\ServicesController@availability')->name('admin.services.availability');
+    Route::match(['get','post'],'/services/availability/add', 'Admin\ServicesController@availability_add')->name('admin.services.availAdd');
+    Route::post('/services/availability/status', 'Admin\ServicesController@status')->name('admin.services.aval.status');
+    Route::match(['get','post'],'/services/availability/edit/{id}', "Admin\ServicesController@edit_availability")->name('admin.services.aval.edit');
     
-    Route::get('/service/ajax', "Admin\ServiceController@ajax")->name('admin.service.ajax');
-    Route::post('/service/delete', "Admin\ServiceController@delete")->name('admin.service.delete');
+    // Fro Booking Services
+    Route::get('/bookings', 'Admin\BookingServiceController@index')->name('admin.booking.index');
 
   // For Users
   Route::get('/users', 'UserController@index')->name('admin.users.index');

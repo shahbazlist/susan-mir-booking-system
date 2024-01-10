@@ -1,8 +1,5 @@
 @extends('theme.layouts.app')
 @section('content')
-<?php
-$page_number = 1;
-?>
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-md-12">
@@ -23,6 +20,7 @@ $page_number = 1;
     </div>
     <div class="col-md-12">
       
+      
       <div class="card">
         <div class="card-header">
           
@@ -34,6 +32,12 @@ $page_number = 1;
           </div>
           <button class="btn btn-primary pl-2 search_data">Search</button>
     
+          <div class="float-right">
+            <div class="input-group mb-3">
+              
+              <a class="btn btn-primary ml-2" href="{{route('admin.services.create')}}">Add New</a>
+            </div>
+          </div>
         </div>
         <div class="card-body p-0">
           @if(isset($data) && count($data)>0)
@@ -42,27 +46,28 @@ $page_number = 1;
             <thead>
               <tr>
                 <th>S.R</th>
-                <th>BookingId</th>
-                <th>Service</th>
-                <th>Booking Date</th>
+                <th>Service Title</th>
+                <th>Service Desc</th>
                 <th>Total Slot</th>
-                <th>Total Cost(&#8377;)</th>
-                <th>Name</th>
-                <th>Email</th>
+                <th>Price</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               @foreach($data as $key=>$v)
-              <tr class="row_{{ $v->id }}">
+              <tr>
                 <td>{{ ++$key }}</td>
-                <td>{{ $v->booking_id }}</td>
-                <td>{{ $v->service->service_title }}</td>
-                <td>{{ Date('d M, Y',strtotime($v->booking_service_date)) }}</td>
-                <td>{{ $v->booking_qty }}</td>
-                <td>{{ $v->total_cost }}</td>
-                <td>{{ $v->full_name }}</td>
-                <td>{{ $v->email }}</td>
+                <td>{{ Str::limit($v->service_title,50,'...')}}</td>
+                <td>{{ $v->description }}</td>
+                <td>{{ $v->slot }}</td>
+                <td>{{ $v->price }}</td>
+                <td>
+                  <a href="{{route('admin.services.edit',[$v->id])}}" class="btn btn-primary btn-sm">Edit</a>
+                  {{-- <a href="#" data-id="{{ $v->id }}" class="btn btn-danger btn-sm trash_btn delete{{ $v->id }}">Trash</a> --}}
+                  
+                </td>
               </tr>
+              <?php //$page_number++ ?>
 
               @endforeach
             <tbody>
@@ -85,8 +90,5 @@ $page_number = 1;
 </div>
 @push("scripts")
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script type="text/javascript">
-    
-</script>
 @endpush
 @endsection

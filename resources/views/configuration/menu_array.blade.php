@@ -11,6 +11,34 @@ $menu = array (
     array (
     ),
   ),
+  // 1 => 
+  // array (
+  //   'name' => 'Service',
+  //   'icon' => 'fa fa-calendar-plus-o',
+  //   'dropdown' => true,
+  //   'route' => '',
+  //   'dropdown_items' => 
+  //   array (
+  //     0 => 
+  //     array (
+  //       'name' => 'Service',
+  //       'icon' => 'fa fa-circle-o',
+  //       'route' => 'admin.service.index',
+  //     ),
+  //     1 => 
+  //     array (
+  //       'name' => 'Add Service Slot',
+  //       'icon' => 'fa fa-circle-o',
+  //       'route' => 'admin.service_slot.create',
+  //     ),
+  //     2 => 
+  //     array (
+  //       'name' => 'Manage Service',
+  //       'icon' => 'fa fa-circle-o',
+  //       'route' => 'admin.service_slot.index',
+  //     ),
+  //   ),
+  // ),
   1 => 
   array (
     'name' => 'Service',
@@ -21,21 +49,21 @@ $menu = array (
     array (
       0 => 
       array (
-        'name' => 'Service',
+        'name' => 'Add Services',
         'icon' => 'fa fa-circle-o',
-        'route' => 'admin.service.index',
+        'route' => 'admin.services.create',
       ),
       1 => 
       array (
-        'name' => 'Add Service Slot',
+        'name' => 'All Services',
         'icon' => 'fa fa-circle-o',
-        'route' => 'admin.service_slot.create',
+        'route' => 'admin.services.index',
       ),
       2 => 
       array (
-        'name' => 'Manage Service',
+        'name' => 'Availability',
         'icon' => 'fa fa-circle-o',
-        'route' => 'admin.service_slot.index',
+        'route' => 'admin.services.availability',
       ),
     ),
   ),
@@ -55,6 +83,7 @@ $menu = array (
       ),
     ),
   ),
+  
   // 3 => 
   // array (
   //   'name' => 'Users',

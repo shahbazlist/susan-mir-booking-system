@@ -17,12 +17,14 @@ class CreateBookingServicesTable extends Migration
             $table->id();
             $table->integer('booking_id');
             $table->integer('service_id');
+            $table->integer('service_available_id');
             $table->string('full_name');
             $table->string('email');
             $table->string('booking_qty');
             $table->string('total_cost');
             $table->date('booking_service_date')->nullable();
             $table->dateTime('booking_date')->nullable();
+            $table->string('slot_type')->default(1);
             $table->timestamps();
         });
     }

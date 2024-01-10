@@ -6,16 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class BookingService extends Model
+class ServiceAvailable extends Model
 {
     use HasFactory;
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
-    }
-
-    public function serviceAvailable(): BelongsTo
-    {
-        return $this->belongsTo(ServiceAvailable::class);
     }
 }

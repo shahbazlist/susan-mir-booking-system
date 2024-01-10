@@ -129,7 +129,7 @@ $page_number = 1;
           // var data_status = $(this).attr('data-status');
           var status_msg = "It will be trashed from the system!";
           swal({
-              title: "Are you sure?",
+              title: "Are you sure?ssss",
               text: status_msg,
               icon: "warning",
               buttons: true,

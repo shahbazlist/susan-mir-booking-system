@@ -11,9 +11,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 </head>
 <body>
-    <div class="container mt-5" style="max-width: 700px">
+    <div class="container mt-5" >{{-- style="max-width: 700px" --}}
         <h2 class="h2 text-center mb-5 border-bottom pb-3">Booking System</h2>
-        <div id='full_calendar_events'></div>
+        <div class="row">
+          <div class="col-sm-6">  
+            <div id='full_calendar_events'></div>
+          </div>
+          <div class="col-sm-6">  
+            <div class="form-group">
+              <div class="view_response">
+                
+              </div>
+              
+            </div>
+          </div>
+        </div>
+        
     </div>
 
     <!-- Start popup dialog box -->
@@ -30,7 +43,7 @@
         <form id="bookingSlotForm">
           <div class="img-container">
             <div class="row">
-              <h4>Booking date : <b class="showBookingDate"></b></h4><br>
+              <h5>Booking date : <b class="showBookingDate"></b>, Slot: <b class="totalSlot"></b></h5><br>
               <input type="hidden" id="selectedBookingId" name="selectedBookingId">
               <input type="hidden" id="selectedBookingDate" name="selectedBookingDate">
               <div class="col-sm-12">  
@@ -78,17 +91,10 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
 
-    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    {{-- <script type="text/javascript">
-      $.ajaxSetup({
-          headers: {
-              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-          }
-      });
-      </script> --}}
+    
     <script>
       $(document).on('input', '#slot_qty', function() {
           $(this).val($(this).val().replace(/\D/g, ''))
@@ -107,81 +113,58 @@
                 selectable: true,
                 selectHelper: true,
                 select: function (event_start, event_end, allDay) {
+                    var nowDate = moment(new Date()).format('YYYY-MM-DD');
                     var selectDate = moment(event_start).format('YYYY-MM-DD');
+                    if(new Date(nowDate) > new Date(selectDate))
+                    {
+                      return false;
+                    }
                     var event_start = $.fullCalendar.formatDate(event_start, "Y-MM-DD HH:mm:ss");
                     var event_end = $.fullCalendar.formatDate(event_end, "Y-MM-DD HH:mm:ss");
+                    $('.view_response').html('');
                     $.ajax({
-                        // url: SITEURL + "/calendar-crud-ajax",
                         url: "{{route('home.booking.booking_ability')}}",
                         data: {
                             selectDate: selectDate,
-                            // event_start: event_start,
-                            // event_end: event_end,
                         },
                         type: "POST",
                         success: function (response) {
                           if(response.status == 'true'){
-                            $('.showBookingDate').html(response.data.selectedDate);
-                            $('#selectedBookingId').val(response.data.selectedDateId);
-                            $('#selectedBookingDate').val(response.data.selectedDate);
-                            $('#event_entry_modal').modal('show');
+                            $('.view_response').html(response.data);
                           }else{
-                            alert('No Service Available!');
+                            $('.view_response').html(response.data);
                           }
-                          return false
-                          alert(response.status);return false;
-                            displayMessage("Event created.");
-                            calendar.fullCalendar('renderEvent', {
-                                id: data.id,
-                                title: event_name,
-                                start: event_start,
-                                end: event_end,
-                                allDay: allDay
-                            }, true);
-                            calendar.fullCalendar('unselect');
                         }
                     });
                 },
-                eventDrop: function (event, delta) {
-                    var event_start = $.fullCalendar.formatDate(event.start, "Y-MM-DD");
-                    var event_end = $.fullCalendar.formatDate(event.end, "Y-MM-DD");
-                    $.ajax({
-                        url: SITEURL + '/calendar-crud-ajax',
-                        data: {
-                            title: event.event_name,
-                            start: event_start,
-                            end: event_end,
-                            id: event.id,
-                            type: 'edit'
-                        },
-                        type: "POST",
-                        success: function (response) {
-                            displayMessage("Event updated");
-                        }
-                    });
-                },
-                eventClick: function (event) {
-                    var eventDelete = confirm("Are you sure?");
-                    if (eventDelete) {
-                        $.ajax({
-                            type: "POST",
-                            url: SITEURL + '/calendar-crud-ajax',
-                            data: {
-                                id: event.id,
-                                type: 'delete'
-                            },
-                            success: function (response) {
-                                calendar.fullCalendar('removeEvents', event.id);
-                                displayMessage("Event removed");
-                            }
-                        });
-                    }
-                }
             });
         });
-        function displayMessage(message) {
-            toastr.success(message, 'Event');            
+        function choseBook(id){
+          $(".msgError").html("");
+          $("#bookingSlotForm")[0].reset();
+          if (id) {
+            $.ajax({
+                type: "POST",
+                url: "{{route('home.booking.chosebook')}}",
+                data: {
+                    id: id,
+                },
+                success: function (response) {
+                  if(response.status == 'true'){
+                    $('#selectedBookingId').val(response.data.selectedDateId);
+                    $('#selectedBookingDate').val(response.data.selectedDate);
+                    $('.totalSlot').html(response.data.slot);
+                    $('.showBookingDate').html(response.data.selectedDate);
+                    
+                    $('#event_entry_modal').modal('show');
+                  }
+                }
+            });
+          }else{
+            alert('Something went wrong!');
+          }
         }
+        
         $('.slotPriceCal').on('input',function(e){
           $(".bookingSlotBtn").removeAttr("disabled");
          var slotQty = this.value;
@@ -210,9 +193,6 @@
         		});
          }
     });
-        function save_booking(){
-          alert();
-        }
 
         $("#bookingSlotBtn").click(function (event) {
                 event.preventDefault();
@@ -223,10 +203,10 @@
                     $("#full_nameError").html("<span class='text-danger'>Please enter full name.</span>");
                     var validationCount= 0;     
                 }
-                // if($("#email").val().trim() == ""){
-                //     $("#emailError").html("<span class='text-danger'>Please enter email.</span>");
-                //     var validationCount= 0;     
-                // }
+                if($("#email").val().trim() == ""){
+                    $("#emailError").html("<span class='text-danger'>Please enter email.</span>");
+                    var validationCount= 0;     
+                }
                 if($("#slot_qty").val().trim() == ""){
                     $("#slot_qtyError").html("<span class='text-danger'>Please enter slot qty.</span>");
                     var validationCount= 0;     
@@ -258,6 +238,7 @@
                           }
 
                           if(response.status == 'true'){
+                            $("#bookingSlotForm")[0].reset();
                             alert(response.msg);
                             location.reload();
                           }
@@ -271,6 +252,8 @@
                   }
 
                 });
+
+        
     </script>
 </body>
 </html>
