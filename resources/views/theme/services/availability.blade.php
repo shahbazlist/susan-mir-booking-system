@@ -26,7 +26,7 @@
           <form class="search-form">
               <div class="float-left">
                 <div class="input-group mb-3 pr-2">
-                  <input type="text" class="form-control search" name="search" id="search" placeholder="Search by Name">
+                  <input type="text" class="form-control search" name="search" id="search" value="{{$search}}" placeholder="Search by Title">
                 </div>
               </div>
               <button  class="btn btn-primary pl-2 search_data">Search</button>

@@ -121,9 +121,17 @@ class ServicesController extends Controller
     
     public function availability(Request $request)
     {
-        $data= ServiceAvailable::with('service')->latest()->paginate(10);
-        
-        return view('theme.services.availability',compact('data'));
+        $search = "";
+        $query= ServiceAvailable::with('service');
+        if (!empty($request->get('search'))) { // For Search
+            $search = $request->get('search');
+            $query->where(function ($w) use ($request) {
+                $search = $request->get('search');
+                $w->orWhere('from_date', 'LIKE', "%$search%")->orWhereRelation('service', 'service_title', 'LIKE', "%$search%");
+            });
+        }
+        $data = $query->latest()->paginate(10);
+        return view('theme.services.availability',compact('data','search'));
     }
 
     public function availability_add(Request $request)
