@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Models\ServiceSlot;
-use App\Models\Service;
+// use App\Models\ServiceSlot;
 use App\Models\ServiceAvailable;
+use App\Models\BookingService;
+use App\Models\Service;
 
 class ServicesController extends Controller
 {
@@ -183,5 +184,45 @@ class ServicesController extends Controller
         $data = ServiceAvailable::where('id',$id)->first();
         $services = Service::get()->toArray();
         return view('theme.services.edit_avalability',compact('data','services'));
+    }
+
+    public function booking_history(Request $request)
+    {
+        $data= BookingService::with(['service','serviceAvailable'])->where('service_available_id',$request->data_id)->latest()->get()->toArray();
+       if(count($data)){
+            $viewAdd = '';
+            $total = 0;
+            foreach($data as $key=>$val){
+                $viewAdd .= '
+                            <tr>
+                                <td>'.++$key.'</td>
+                                <td>'.$val['booking_id'].'</td>
+                                <td>'.$val['booking_qty'].'</td>
+                                <td>'.$val['total_cost'].'</td>
+                                <td>'.$val['full_name'].'</td>
+                            </tr>';
+                $total += $val['booking_qty'];
+            }
+            $viewData = '
+                    <span>Service Title: '.$data[0]['service']['service_title'].' | Date: '.Date('d M, Y',strtotime($data[0]['booking_service_date'])).' | Total Booked: '.$total.'</span><br>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>S.R</th>
+                            <th>BookingId</th>
+                            <th>QTY</th>
+                            <th>Cost</th>
+                            <th>Full Nane</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            '.$viewAdd.'
+                        </tbody>
+                    </table>
+                    ';
+            return response()->json(['status' => 'true', 'data' => $viewData]);
+       }else{
+        return response()->json(['status' => 'true', 'data' => 'No data available.']);
+       }
     }
 }

@@ -52,6 +52,7 @@ Route::middleware(['auth', 'twofactor'])->prefix('admin')->group(function () {
     Route::get('/services/availability', 'Admin\ServicesController@availability')->name('admin.services.availability');
     Route::match(['get','post'],'/services/availability/add', 'Admin\ServicesController@availability_add')->name('admin.services.availAdd');
     Route::post('/services/availability/status', 'Admin\ServicesController@status')->name('admin.services.aval.status');
+    Route::post('/services/availability/history', 'Admin\ServicesController@booking_history')->name('admin.services.aval.booking_history');
     Route::match(['get','post'],'/services/availability/edit/{id}', "Admin\ServicesController@edit_availability")->name('admin.services.aval.edit');
     
     // Fro Booking Services

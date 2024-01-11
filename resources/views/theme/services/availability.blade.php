@@ -69,7 +69,7 @@
                 </td>
                 <td>
                   <a href="{{route('admin.services.aval.edit',[$v->id])}}" class="btn btn-primary btn-sm">Edit</a>
-                  {{-- <a href="#" data-id="{{ $v->id }}" class="btn btn-danger btn-sm trash_btn delete{{ $v->id }}">Trash</a> --}}
+                  <a href="javascript:void(0);" data-id="{{ $v->id }}" class="btn btn-secondary btn-sm trash_btn bookingView">Booking</a>
                   
                 </td>
               </tr>
@@ -92,6 +92,26 @@
         </div>
       </div>
     </div>
+    <!-- Basic Modal -->
+    <div class="modal fade" id="bookingSlot" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="max-width: 40%;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Booking History</h5>
+              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+            <div id="view_response"></div>
+            {{-- Table start --}}
+            
+            {{-- Table End --}}
+        </div>
+        </div>
+      </div>
+    </div>
+<!-- Basic Modal End-->
   </div>
 </div>
 @push("scripts")
@@ -103,7 +123,7 @@
 <script>
   //Trash Item
   $(document).ready(function() {
-  $(".status_btn").click(function(e) {
+      $(".status_btn").click(function(e) {
     
           e.preventDefault();
           var data_id = $(this).attr('data-id');
@@ -139,6 +159,37 @@
                 });
               }
             });
-        });
+      });
+
+      $(".bookingView").click(function(e) {
+        var data_id = $(this).attr('data-id');
+        // $('#bookingSlot').modal('show');
+        if (data_id) {
+            var token = '{{ csrf_token() }}';
+            var url = "{{route('admin.services.aval.booking_history')}}";
+            $.ajax({
+              type: 'POST',
+              url: url,
+              data: {
+                _token: token,
+                data_id: data_id,
+              },
+              dataType: 'JSON',
+              success: function(response) {
+                if(response.status == 'true'){
+                  $('#view_response').html(response.data);
+                  $('#bookingSlot').modal('show');
+                  return false;
+                }
+                var res_msg = "Status has chenged successfully.";
+                swal(res_msg, {
+                  icon: "success",
+                }).then(function() {
+                  window.location.replace("{{route('admin.services.availability')}}")
+                });
+              },
+            });
+          }
+      });
       });
 </script>
