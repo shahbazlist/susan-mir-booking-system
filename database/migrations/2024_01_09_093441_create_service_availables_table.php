@@ -17,8 +17,8 @@ class CreateServiceAvailablesTable extends Migration
             $table->id();
             $table->integer('service_id');
             $table->date('from_date')->nullable();
-            $table->string('booked_slot')->default(0);
-            $table->string('updated_max_slot')->default(0);
+            $table->smallInteger('booked_slot')->default(0);
+            $table->smallInteger('updated_max_slot')->default(0);
             $table->boolean('status')->default(1);
             $table->timestamps();
         });

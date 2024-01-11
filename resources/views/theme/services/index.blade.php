@@ -57,8 +57,8 @@
               @foreach($data as $key=>$v)
               <tr>
                 <td>{{ ++$key }}</td>
-                <td>{{ Str::limit($v->service_title,50,'...')}}</td>
-                <td>{{ $v->description }}</td>
+                <td>{{ Str::limit($v->service_title,50,' ...')}}</td>
+                <td>{{ Str::limit($v->description,100,' ...')}}</td>
                 <td>{{ $v->slot }}</td>
                 <td>{{ $v->price }}</td>
                 <td>
