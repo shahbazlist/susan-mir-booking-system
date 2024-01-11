@@ -55,11 +55,12 @@
             <tbody>
               @php $row =1 @endphp
               @foreach($data as $key=>$v)
+              <?php $totalSlot = $v->updated_max_slot == 0 ? $v->service->slot : $v->updated_max_slot ;?>
               <tr>
                 <td>{{ $row }}</td>
                 <td>{{ Str::limit($v->service->service_title,50,'...')}}</td>
                 <td>{{ Date('d M, Y',strtotime($v->from_date)) }}</td>
-                <td>{{ $v->booked_slot }}</td>
+                <td>{{ $v->booked_slot }}/{{$totalSlot}}</td>
                 <td>
                   <label class="switch">
                     <input type="checkbox" name="two_factor_enable" @php echo $v->status == 1 ? 'checked' : '' @endphp class="two_factor_enable status_btn"  data-id="{{ $v->id }}" id="two_factor_enable">
