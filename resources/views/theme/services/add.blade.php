@@ -38,7 +38,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
-                      <label for="service_desc">Service Description <span class="text-danger">*</span></label>
+                      <label for="service_desc">Service Description</label>
                       <textarea id="service_desc" name="service_desc"  class="form-control" >  </textarea>
                       @error('service_desc') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>
@@ -60,6 +60,8 @@
                   </div>
                 </div>
             </div>
+
+
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">

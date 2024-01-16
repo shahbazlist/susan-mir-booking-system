@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Models\ServiceAvailable;
 use App\Models\BookingService;
 use App\Models\Service;
+use App\Models\ServiceTime;
+use App\Models\TimeLine;
 
 class ServicesController extends Controller
 {
@@ -145,11 +147,17 @@ class ServicesController extends Controller
             if(ServiceAvailable::whereDate('from_date',$request->date)->where('service_id',$request->service)->count()){
                 return redirect()->back()->withInput()->with('errorDate', 'The date has already been taken this service');
             }
+            
             $service = new ServiceAvailable();
             $service->service_id = $request->service;
             $service->from_date  = $request->date;
-            // $service->to_date    = $request->date;
             $service->save();
+            if(count($request->addmore) > 0){
+                foreach($request->addmore as $timeVal){
+                    if(!empty($timeVal['from']))
+                    ServiceTime::insert(['service_available_id'=>$service->id,'from_time'=>$timeVal['from'],'to_time'=>$timeVal['to']]);
+                }
+            }
             return redirect()->to(route('admin.services.availability'))->with('success', 'New Slot has been added.');
         }
         $data= Service::where('status',1)->get();
@@ -177,13 +185,23 @@ class ServicesController extends Controller
             if($getBookedSlotQty->booked_slot > $request->max_slot){
                 return redirect()->to(route('admin.services.aval.edit',[$id]))->with('error', "Please add max slot more than $getBookedSlotQty->booked_slot.");
             }
-            
+            // $time_line_id    = isset($request->start_time) && count($request->start_time) ? json_encode($request->start_time) : '';
+           
             ServiceAvailable::where('id',$id)->update(['service_id'=>$request->service,'from_date'=>$request->date,'updated_max_slot'=>$request->max_slot]);
+            if(count($request->addmore) > 0){
+                ServiceTime::where('service_available_id',$id)->delete();
+                foreach($request->addmore as $timeVal){
+                    if(!empty($timeVal['from']))
+                    ServiceTime::insert(['service_available_id'=>$id,'from_time'=>$timeVal['from'],'to_time'=>$timeVal['to']]);
+                }
+            }
             return redirect()->to(route('admin.services.aval.edit',[$id]))->with('success', 'Slot updated successfully.');
         }
-        $data = ServiceAvailable::where('id',$id)->first();
+        $data = ServiceAvailable::with('serviceTime')->where('id',$id)->first();
         $services = Service::get()->toArray();
-        return view('theme.services.edit_avalability',compact('data','services'));
+        $serviceTime = $data->serviceTime->toArray();
+        
+        return view('theme.services.edit_avalability',compact('data','services','serviceTime'));
     }
 
     public function booking_history(Request $request)

@@ -7,6 +7,8 @@ use App\Models\BookingService;
 use Illuminate\Http\Request;
 use App\Models\ServiceSlot;
 use App\Models\Service;
+use App\Models\ServiceTime;
+use Illuminate\Support\Facades\DB;
 use Validator;
 
 class IndexController extends Controller
@@ -71,7 +73,6 @@ class IndexController extends Controller
     
     public function booking(Request $request)
     {
-        
         $validator = Validator::make($request->all(), [
             'full_name' => 'required',
             'email'     => 'required',
@@ -81,6 +82,7 @@ class IndexController extends Controller
         if ($validator->fails()) {
             return response()->json(['status'=> false,'msg'=> $validator->getMessageBag()]);
         }
+        $serviceTime = !empty($request->time_line) ? ServiceTime::select('from_time','to_time')->whereId($request->time_line)->first() : '';
         $getServiceId = ServiceAvailable::with('service')->where('id', $request->selectedBookingId)->first();
         $calculate = $request->slot_qty*$getServiceId->service->price;
         
@@ -92,11 +94,13 @@ class IndexController extends Controller
         $booking->email         = $request->email;
         $booking->booking_qty   = $request->slot_qty;
         $booking->total_cost    = $calculate;
+        $booking->service_from_time  = $serviceTime ? $serviceTime->from_time : '';
+        $booking->service_to_time  = $serviceTime ? $serviceTime->to_time : '';
         $booking->booking_service_date  = date("Y-m-d", strtotime($request->selectedBookingDate));
         $booking->booking_date   = date('Y-m-d H:i:s');
         $booking->save();
         ServiceAvailable::where('id', $request->selectedBookingId)->update(['booked_slot'=>$request->slot_qty+$getServiceId->booked_slot]);
-        // Service::where('id', $getServiceId->service->id)->update(['slot'=>$getServiceId->service->slot-$request->slot_qty]);
+       
         return response()->json(['status' => 'true', 'msg' => "Booking slot has been booked."]);
     }
 
@@ -105,9 +109,16 @@ class IndexController extends Controller
         $servData = ServiceAvailable::with('service')->where('id', $request->id)->first();
         $data['selectedDate'] = date("d M, Y", strtotime($servData->from_date));
         $data['selectedDateId'] = $servData->id;
-        
-            $data['slot'] = $servData->service->slot;//Defoult Slot
-        
+        $data['slot'] = $servData->service->slot;//Defoult Slot
+        $data['time_line'] = '';
+        $timeName = ServiceTime::select('id','from_time','to_time')->where('service_available_id',$servData->id)->get();
+        if(count($timeName)){
+            $option = '<option value="">Select Time</option>';
+            foreach($timeName as $val){
+                $option .= '<option value="'.$val->id.'">'.$val->from_time.' To '.$val->to_time.'</option>';
+            }
+            $data['time_line'] = $option;
+        }
         
         return response()->json(['status' => 'true', 'data' => $data]);
     }

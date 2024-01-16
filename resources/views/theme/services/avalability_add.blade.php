@@ -47,6 +47,42 @@
                       @if(session('errorDate')) <div class="text-danger">{{session('errorDate')}}</div> @endif
                     </div>
                   </div>
+                  {{-- <div class="col-md-12">
+                    <input type="checkbox" id="selectAll"><label for="selectAll"> &nbsp; Select All</label><br>
+                  </div>
+                  <br>
+                  @foreach($timeLine as $val)
+                    <div class="col-md-2">
+                        <input type="checkbox" name="start_time[]" class="startTime" value="{{$val['id']}}" id="start_time_{{$val['id']}}"><label for="start_time_{{$val['id']}}"> &nbsp; {{ $val['time']}}</label><br>
+                    </div>
+                  @endforeach
+                  <br> --}}
+                  <div class="col-md-2">
+                  </div>
+                  <hr>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <table class="table table-bordered" id="dynamicTable">  
+                          <tr>
+                              <th>From Time</th>
+                              <th>To Tim</th>
+                              <th>Action</th>
+                          </tr>
+                          <tr>  
+                              <td><input type="time" name="addmore[0][from]" placeholder="Enter your Name" class="form-control" /></td>  
+                              <td><input type="time" name="addmore[0][to]" placeholder="Enter your Qty" class="form-control" /></td>  
+                              <td><button type="button" name="add" id="add" class="btn btn-success" onclick="addMore()">Add More</button></td>  
+                          </tr>  
+                      </table> 
+                    </div>
+                  </div>
+                  {{-- <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="price">Date <span class="text-danger">*</span></label>
+                      <input type="text" name="daterange" value="" id="daterange" class="form-control" />
+                      @error('your_datepicker_id') <div class="text-danger">{{ $message }}</div> @enderror
+                    </div>
+                  </div> --}}
             </div>
             
             <div class="row">
@@ -62,8 +98,36 @@
     </div>
   </div>
 </div>
+@push("scripts")
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+@endpush
 @endsection
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>
+  var i = 0;
+  function addMore(){
+    ++i;
+    if(i <=10){
+      $("#dynamicTable").append('<tr><td><input type="time" name="addmore['+i+'][from]" placeholder="Enter your Name" class="form-control" /></td><td><input type="time" name="addmore['+i+'][to]" placeholder="Enter your Qty" class="form-control" /></td><td><button type="button" class="btn btn-danger remove-tr">Remove</button></td></tr>');
+    }else{
+      return false
+    }
+  }
+  $(document).on('click', '.remove-tr', function(){  
+      $(this).parents('tr').remove();
+  });
+  // $(function() {
+  //   $('input[name="daterange"]').daterangepicker({
+  //     opens: 'left'
+  //   }, function(start, end, label) {
+  //     console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+  //   });
+  // });
+</script>
 <script>
     $(function(){
     var dtToday = new Date();
@@ -79,36 +143,16 @@
     var minDate= year + '-' + month + '-' + day;
 
     $('#txtDate').attr('min', minDate);
+    $('#daterange').attr('min', minDate);
 });
-
-
-  // Get the elements
-  var from_input = $('#startingDate').pickadate(),
-    from_picker = from_input.pickadate('picker')
-  var to_input = $('#endingDate').pickadate(),
-    to_picker = to_input.pickadate('picker')
-
-  // Check if there’s a “from” or “to” date to start with and if so, set their appropriate properties.
-  if (from_picker.get('value')) {
-    to_picker.set('min', from_picker.get('select'))
-  }
-  if (to_picker.get('value')) {
-    from_picker.set('max', to_picker.get('select'))
-  }
-
-  // Apply event listeners in case of setting new “from” / “to” limits to have them update on the other end. If ‘clear’ button is pressed, reset the value.
-  from_picker.on('set', function (event) {
-    if (event.select) {
-      to_picker.set('min', from_picker.get('select'))
-    } else if ('clear' in event) {
-      to_picker.set('min', false)
-    }
-  })
-  to_picker.on('set', function (event) {
-    if (event.select) {
-      from_picker.set('max', to_picker.get('select'))
-    } else if ('clear' in event) {
-      from_picker.set('max', false)
-    }
-  })
+// $(document).ready(function () {
+//   $('#selectAll').on('change',function(e){
+//     if( $('#selectAll').is(':checked') ){
+//       $('.startTime').prop('checked', true);
+//     }
+//     else{
+//       $('.startTime').prop('checked', false);
+//     }
+//   });
+// });
 </script>

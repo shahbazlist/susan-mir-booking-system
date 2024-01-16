@@ -45,6 +45,7 @@ $page_number = 1;
                 <th>BookingId</th>
                 <th>Service</th>
                 <th>Booking Date</th>
+                <th>Time</th>
                 <th>Total Slot</th>
                 <th>Total Cost(&#8377;)</th>
                 <th>Name</th>
@@ -58,6 +59,7 @@ $page_number = 1;
                 <td>{{ $v->booking_id }}</td>
                 <td>{{ $v->service->service_title }}</td>
                 <td>{{ Date('d M, Y',strtotime($v->booking_service_date)) }}</td>
+                <td>{{ $v->service_from_time.' - '. $v->service_to_time}}</td>
                 <td>{{ $v->booking_qty }}</td>
                 <td>{{ $v->total_cost }}</td>
                 <td>{{ $v->full_name }}</td>

@@ -48,15 +48,25 @@
               <input type="hidden" id="selectedBookingDate" name="selectedBookingDate">
               <div class="col-sm-12">  
                 <div class="form-group">
-                  <label for="full_name">Full Name</label>
+                  <label for="full_name">Full Name <span class="text-danger">*</span></label>
                   <input type="text" name="full_name" id="full_name" class="form-control" placeholder="Enter your full name">
                   <span id="full_nameError" class="msgError"></span>
                 </div>
               </div>
               <div class="col-sm-12">  
                 <div class="form-group">
-                  <label for="email">Email</label>
+                  <label for="email">Email <span class="text-danger">*</span></label>
                   <input type="text" name="email" id="email" class="form-control" placeholder="Enter your email">
+                  <span id="emailError" class="msgError"></span>
+                </div>
+              </div>
+              {{-- style="display: none" --}}
+              <div class="col-sm-12 timeline_dev" style="display: none">  
+                <div class="form-group">
+                  <label for="email">TimeLine <span class="text-danger">*</span></label>
+                  <select class="form-control" name="time_line" id="time_line">
+                    
+                  </select>
                   <span id="emailError" class="msgError"></span>
                 </div>
               </div>
@@ -64,7 +74,7 @@
             <div class="row">
               <div class="col-sm-6">  
                 <div class="form-group">
-                  <label for="slot_qty">Slot Qty</label>
+                  <label for="slot_qty">Slot Qty <span class="text-danger">*</span></label>
                   <input type="text" name="slot_qty" id="slot_qty" class="form-control slotPriceCal" placeholder="Ex 5">
                   <span id="slot_qtyError" class="msgError"></span>
                 </div>
@@ -156,6 +166,13 @@
                     $('.totalSlot').html(response.data.slot);
                     $('.showBookingDate').html(response.data.selectedDate);
                     
+                    if(response.data.time_line != ''){
+                      $('.timeline_dev').show();
+                      // $(".timeline_dev").removeAttr("style").hide();
+                      $('#time_line').html(response.data.time_line);
+                    }else{
+                      $('.timeline_dev').hide();
+                    }
                     $('#event_entry_modal').modal('show');
                   }
                 }

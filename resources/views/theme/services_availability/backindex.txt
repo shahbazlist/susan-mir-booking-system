@@ -1,0 +1,169 @@
+@extends('theme.layouts.app')
+@section('content')
+  <div class="container-fluid px-5">
+    <div class="row justify-content-center">
+      <div class="col-md-12">
+        @if ($errors->any())
+          <div class="alert alert-danger">
+            <ul>
+              @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
+        @endif
+        @if(session('success'))
+          <div class="alert alert-success">
+          {{session('success')}}
+          </div>
+        @endif
+        @if(session('error'))
+          <div class="alert alert-danger">
+          {{session('error')}}
+          </div>
+        @endif
+      </div>
+
+      <div class="col-md-12 form_page">
+        <form action="" class="" method="post">
+        @csrf
+        
+        <div class="card">
+          <div class="card-body">
+            <div class="row form_sec">
+              <div class="col-12"><h5>Basic Details</h5></div>
+            </div>
+            <div class="row">
+              <div class="col-md-4" style="background-color: darkgray;">
+                  <ul class="list-group" >
+                    @foreach ($service as $key=>$val)
+                        <li class="list-group-item" style="background-color: <?php echo $select == $key ? '#d2d2a3' :  'beige';?>" >
+                            <a class="active"> {{$val['service_title']}}</a>
+                        </li>
+                    @endforeach
+                  </ul>
+              </div>
+              <div class="col-md-8">
+                <div id='calendar'></div>  
+                {{-- <div id='full_calendar_events'>dd</div> --}}
+              </div>
+            </div>
+          </div>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  @push("scripts")
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript">
+    
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.css" />  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.css" />  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>  
+@endpush
+@endsection
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>  
+  
+  $(document).ready(function() {  
+   var date = new Date();  
+   var d = date.getDate();  
+   var m = date.getMonth();  
+   var y = date.getFullYear();  
+   
+   var calendar = $('#calendar').fullCalendar({  
+    editable: true,  
+    header: {  
+     left: 'prev,next today',  
+     center: 'title',  
+     right: ''  //month,agendaWeek,agendaDay
+    },  
+   
+    events: "",  
+   
+    eventRender: function(event, element, view) {  
+     if (event.allDay === 'true') {  
+      event.allDay = true;  
+     } else {  
+      event.allDay = false;  
+     }  
+    },  
+    selectable: true,  
+    selectHelper: true,  
+    select: function(start, end, allDay) {  
+    var title = prompt('Event Title:');  
+   
+    if (title) {  
+    var start = $.fullCalendar.formatDate(start, "Y-MM-DD HH:mm:ss");  
+    var end = $.fullCalendar.formatDate(end, "Y-MM-DD HH:mm:ss");  
+    $.ajax({  
+        url: 'add_events.php',  
+        data: 'title='+ title+'&start='+ start +'&end='+ end,  
+        type: "POST",  
+        success: function(json) {  
+        alert('Added Successfully');  
+        }  
+    });  
+    calendar.fullCalendar('renderEvent',  
+    {  
+        title: title,  
+        start: start,  
+        end: end,  
+        allDay: allDay  
+    },  
+    true  
+    );  
+    }  
+    calendar.fullCalendar('unselect');  
+    },  
+   
+    editable: true,  
+    eventDrop: function(event, delta) {  
+    var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");  
+    var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");  
+    $.ajax({  
+        url: 'update_events.php',  
+        data: 'title='+ event.title+'&start='+ start +'&end='+ end +'&id='+ event.id ,  
+        type: "POST",  
+        success: function(json) {  
+         alert("Updated Successfully");  
+        }  
+    });  
+    },  
+    eventClick: function(event) {  
+     var decision = confirm("Do you really want to do that?");   
+     if (decision) {  
+     $.ajax({  
+         type: "POST",  
+         url: "delete_event.php",  
+         data: "&id=" + event.id,  
+          success: function(json) {  
+              $('#calendar').fullCalendar('removeEvents', event.id);  
+               alert("Updated Successfully");}  
+     });  
+     }  
+     },  
+    eventResize: function(event) {  
+        var start = $.fullCalendar.formatDate(event.start, "yyyy-MM-dd HH:mm:ss");  
+        var end = $.fullCalendar.formatDate(event.end, "yyyy-MM-dd HH:mm:ss");  
+        $.ajax({  
+         url: 'update_events.php',  
+         data: 'title='+ event.title+'&start='+ start +'&end='+ end +'&id='+ event.id ,  
+         type: "POST",  
+         success: function(json) {  
+          alert("Updated Successfully");  
+         }  
+        });  
+     }  
+      
+   });  
+     
+  });  
+   
+ </script> 

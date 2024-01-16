@@ -67,7 +67,25 @@ $menu = array (
       ),
     ),
   ),
+
   2 => 
+  array (
+    'name' => 'Availability Slot',
+    'icon' => 'fa fa-users',
+    'dropdown' => true,
+    'route' => '',
+    'dropdown_items' => 
+    array (
+      0 => 
+      array (
+        'name' => 'Service Availability',
+        'icon' => 'fa fa-circle-o',
+        'route' => 'admin.slot.index',
+      ),
+    ),
+  ),
+
+  3 => 
   array (
     'name' => 'Booking',
     'icon' => 'fa fa-calendar-plus-o',
@@ -83,6 +101,7 @@ $menu = array (
       ),
     ),
   ),
+
   
   // 3 => 
   // array (

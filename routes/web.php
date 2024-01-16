@@ -55,8 +55,12 @@ Route::middleware(['auth', 'twofactor'])->prefix('admin')->group(function () {
     Route::post('/services/availability/history', 'Admin\ServicesController@booking_history')->name('admin.services.aval.booking_history');
     Route::match(['get','post'],'/services/availability/edit/{id}', "Admin\ServicesController@edit_availability")->name('admin.services.aval.edit');
     
+    // For Service Slot
+    Route::get('/slot/{id?}', 'Admin\ServiceAvalabilityController@index')->name('admin.slot.index');
+    Route::post('/slot/update-slot', 'Admin\ServiceAvalabilityController@update')->name('admin.slot.update_slot');
     // Fro Booking Services
     Route::get('/bookings', 'Admin\BookingServiceController@index')->name('admin.booking.index');
+
 
   // For Users
   Route::get('/users', 'UserController@index')->name('admin.users.index');

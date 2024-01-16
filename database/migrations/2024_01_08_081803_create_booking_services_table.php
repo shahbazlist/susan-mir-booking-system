@@ -24,7 +24,8 @@ class CreateBookingServicesTable extends Migration
             $table->string('total_cost');
             $table->date('booking_service_date')->nullable();
             $table->dateTime('booking_date')->nullable();
-            $table->string('slot_type')->default(1);
+            $table->time('service_from_time')->nullable();
+            $table->time('service_to_time')->nullable();
             $table->timestamps();
         });
     }
